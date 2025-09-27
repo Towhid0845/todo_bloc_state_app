@@ -42,3 +42,10 @@ class SetFilter extends TodoEvent {
 
 // Event to toggle dark mode on or off
 class ToggleDarkMode extends TodoEvent {}
+
+// Event to reorder the items
+class ReorderTodos extends TodoEvent {
+  final int oldIndex;
+  final int newIndex;
+  ReorderTodos(this.oldIndex, this.newIndex);
+}

@@ -109,19 +109,30 @@ class TodoHomePage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 10),
-                // Task list section
+
                 Expanded(
-                  child: ListView.builder(
+                  child: ReorderableListView.builder(
+                    buildDefaultDragHandles: false,
                     itemCount: tasks.length,
+                    onReorder: (oldIndex, newIndex) {
+                      bloc.add(ReorderTodos(oldIndex, newIndex));
+                    },
                     itemBuilder: (context, index) {
                       final task = tasks[index];
                       final actualIndex = state.todos.indexOf(task);
 
                       return ListTile(
-                       
+                        key: ValueKey(task), // 🔑 Required for reorderable
+                        leading: ReorderableDragStartListener(
+                          index: index,
+                          child: const Icon(
+                            Icons.drag_indicator,
+                            color: Colors.grey,
+                          ),
+                        ),
                         title: Row(
                           children: [
-                            Text('${index + 1}. '), // Task number
+                            Text('${index + 1}. '),
                             Checkbox(
                               value: task.done,
                               onChanged:

@@ -14,13 +14,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => TodoBloc(),
-      child: BlocBuilder<TodoBloc, TodoState>(
-        builder: (context, state) {
+      child: BlocSelector<TodoBloc, TodoState, bool>(
+        selector: (state) => state.isDarkMode, // only listen to theme change
+        builder: (context, isDarkMode) {
           return MaterialApp(
             title: 'ToDo App',
             theme: ThemeData.light(),
             darkTheme: ThemeData.dark(),
-            themeMode: state.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
             home: const TodoHomePage(),
           );
         },

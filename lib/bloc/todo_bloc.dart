@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +13,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     on<ToggleDone>(_onToggleDone);
     on<SetFilter>(_onSetFilter);
     on<ToggleDarkMode>(_onToggleDarkMode);
+    on<ReorderTodos>(_onReorderTodos);
     on<SortTasks>((event, emit) {
       emit(state.copyWith(todos: event.sortedTodos));
     });
@@ -76,6 +76,23 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     emit(state.copyWith(isDarkMode: newMode));
   }
 
+  Future<void> _onReorderTodos(
+    ReorderTodos event,
+    Emitter<TodoState> emit,
+  ) async {
+    final todos = List<Todo>.from(state.todos);
+
+    int newIndex = event.newIndex;
+    if (event.oldIndex < event.newIndex) {
+      newIndex -= 1; // adjust because removing shifts the list
+    }
+
+    final todo = todos.removeAt(event.oldIndex);
+    todos.insert(newIndex, todo );
+
+    emit(TodoState(todos: todos, isDarkMode: state.isDarkMode, filter: state.filter,  ));
+  }
+
   Future<void> _saveAndEmit(List<Todo> todos) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(
@@ -85,3 +102,4 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
     emit(state.copyWith(todos: todos));
   }
 }
+
